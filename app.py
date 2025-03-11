@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 import pdfquery
 import openpyxl
@@ -11,28 +12,19 @@ def empty_folder(folder_path):
         if os.path.isfile(file_path):
             os.remove(file_path)
     print(f"Pasta '{folder_path}' esvaziada.")
-
 def main():
-    # Título da aplicação
     st.title('Gerador de Rascunhos a partir de PDFs')
 
-    # Definir diretórios
-    directory_path = os.path.dirname(os.path.abspath(__file__))
-    pdfs_directory = os.path.join(directory_path, 'pdfs')
-    drafts_directory = os.path.join(directory_path, 'RascunhosGerados')
+    # Definir diretório base
+    directory_path = Path(__file__).parent  # Define antes de usar
+
+    # Nome do arquivo Excel
     excel_filename = "Modelo.xlsx"
 
-    excel_path = os.path.join(os.getcwd(), excel_filename)
-
-    st.write(f"Diretório atual: {os.getcwd()}")
-    st.write(f"Arquivos no diretório: {os.listdir(os.getcwd())}")
-
-    if os.path.exists(excel_path):
-        st.write(f"O arquivo {excel_filename} foi encontrado.")
-    else:
-        st.write(f"⚠️ O arquivo {excel_filename} NÃO FOI ENCONTRADO!")
-
-    excel_path = os.path.join(directory_path, excel_filename)
+    # Definir diretórios corretamente
+    pdfs_directory = os.path.join(str(directory_path), 'pdfs')
+    drafts_directory = os.path.join(str(directory_path), 'RascunhosGerados')
+    excel_path = os.path.join(str(directory_path), excel_filename)
 
     # Carregar arquivos PDF
     uploaded_files = st.file_uploader("Carregar arquivos PDF", type=["pdf"], accept_multiple_files=True)
@@ -54,18 +46,22 @@ def main():
         ]
 
         # Criar diretório temporário se não existir
-        if not os.path.exists(pdfs_directory):
-            os.makedirs(pdfs_directory)
-        if not os.path.exists(drafts_directory):
-            os.makedirs(drafts_directory)
+        os.makedirs(pdfs_directory, exist_ok=True)
+        os.makedirs(drafts_directory, exist_ok=True)
 
         # Esvaziar as pastas temporárias
         empty_folder(pdfs_directory)
         empty_folder(drafts_directory)
 
         shutil.copy(excel_path, os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
-        st.write('Cópia da pasta modelo do excel criada')
 
+        copied_path = os.path.join(pdfs_directory, "Temp_Consolidado.xlsx")
+        if os.path.exists(copied_path):
+            st.write(f"Cópia do arquivo criada com sucesso em: {copied_path}")
+        else:
+            st.error(f"Erro ao criar a cópia do Excel em: {copied_path}")
+
+        
         # Carregar o Excel
         copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
         copied_sheet = copied_workbook.active
