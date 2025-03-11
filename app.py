@@ -12,6 +12,7 @@ def empty_folder(folder_path):
         if os.path.isfile(file_path):
             os.remove(file_path)
     print(f"Pasta '{folder_path}' esvaziada.")
+
 def main():
     st.title('Gerador de Rascunhos a partir de PDFs')
 
@@ -57,15 +58,9 @@ def main():
         st.write('Cópia da pasta modelo do excel criada')
 
         # Carregar o Excel
-        
-        
-        
-        try:
-            copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
-            st.write("Arquivo Excel copiado e carregado com sucesso.")
-        except Exception as e:
-            st.error(f"Erro ao abrir o arquivo Excel copiado: {e}")
+        copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
         copied_sheet = copied_workbook.active
+        st.write('Excel aberto para inserção dos dados')
 
         start_row = 2
         empenho_number = None
