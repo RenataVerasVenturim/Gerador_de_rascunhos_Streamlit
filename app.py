@@ -4,6 +4,7 @@ import pdfquery
 import openpyxl
 import shutil
 import streamlit as st
+from io import BytesIO
 
 def empty_folder(folder_path):
     """Esvazia a pasta especificada."""
@@ -16,16 +17,11 @@ def empty_folder(folder_path):
 def main():
     st.title('Gerador de Rascunhos a partir de PDFs')
 
-    # Definir diretório base
-    directory_path = Path(__file__).parent  # Define antes de usar
-
     # Nome do arquivo Excel
     excel_filename = "Modelo.xlsx"
 
-    # Definir diretórios corretamente
-    pdfs_directory = os.path.join(str(directory_path), 'pdfs')
-    drafts_directory = os.path.join(str(directory_path), 'RascunhosGerados')
-    excel_path = os.path.join(str(directory_path), excel_filename)
+    # Carregar arquivo Excel
+    excel_path = Path(__file__).parent / excel_filename
 
     # Carregar arquivos PDF
     uploaded_files = st.file_uploader("Carregar arquivos PDF", type=["pdf"], accept_multiple_files=True)
@@ -46,19 +42,8 @@ def main():
             {'left': 407.0, 'top': 503.52, 'width': 33.36, 'height': 10.0},
         ]
 
-        # Criar diretório temporário se não existir
-        os.makedirs(pdfs_directory, exist_ok=True)
-        os.makedirs(drafts_directory, exist_ok=True)
-
-        # Esvaziar as pastas temporárias
-        empty_folder(pdfs_directory)
-        empty_folder(drafts_directory)
-
-        shutil.copy(excel_path, os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
-        st.write('Cópia da pasta modelo do excel criada')
-
         # Carregar o Excel
-        copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
+        copied_workbook = openpyxl.load_workbook(excel_path)
         copied_sheet = copied_workbook.active
         st.write('Excel aberto para inserção dos dados')
 
@@ -67,9 +52,7 @@ def main():
 
         # Processar os arquivos PDF
         for i, pdf_file in enumerate(uploaded_files):
-            pdf_path = os.path.join(pdfs_directory, pdf_file.name)
-            with open(pdf_path, 'wb') as f:
-                f.write(pdf_file.getbuffer())
+            pdf_path = BytesIO(pdf_file.getbuffer())  # Lê o arquivo PDF diretamente da memória
 
             pdf = pdfquery.PDFQuery(pdf_path)
             pdf.load()
@@ -94,7 +77,7 @@ def main():
             new_filename = "Consolidado.xlsx"
 
         # Salvar o arquivo gerado
-        final_path = os.path.join(drafts_directory, new_filename)
+        final_path = Path(__file__).parent / new_filename
         copied_workbook.save(final_path)
         copied_workbook.close()
 
