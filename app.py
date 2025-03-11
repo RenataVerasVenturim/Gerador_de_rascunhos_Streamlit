@@ -54,18 +54,18 @@ def main():
         empty_folder(drafts_directory)
 
         shutil.copy(excel_path, os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
+        st.write('Cópia da pasta modelo do excel criada')
 
-        copied_path = os.path.join(pdfs_directory, "Temp_Consolidado.xlsx")
-        if os.path.exists(copied_path):
-            st.write(f"Cópia do arquivo criada com sucesso em: {copied_path}")
-        else:
-            st.error(f"Erro ao criar a cópia do Excel em: {copied_path}")
-
-        
         # Carregar o Excel
-        copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
+        
+        
+        
+        try:
+            copied_workbook = openpyxl.load_workbook(os.path.join(pdfs_directory, "Temp_Consolidado.xlsx"))
+            st.write("Arquivo Excel copiado e carregado com sucesso.")
+        except Exception as e:
+            st.error(f"Erro ao abrir o arquivo Excel copiado: {e}")
         copied_sheet = copied_workbook.active
-        st.write('Excel aberto para inserção dos dados')
 
         start_row = 2
         empenho_number = None
