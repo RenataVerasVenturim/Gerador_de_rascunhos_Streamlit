@@ -21,17 +21,17 @@ def main():
     pdfs_directory = os.path.join(directory_path, 'pdfs')
     drafts_directory = os.path.join(directory_path, 'RascunhosGerados')
     excel_filename = "Modelo.xlsx"
-        
+
     excel_path = os.path.join(os.getcwd(), excel_filename)
-    
-    print(f"Diretório atual: {os.getcwd()}")
-    print(f"Arquivos no diretório: {os.listdir(os.getcwd())}")
-    
+
+    st.write(f"Diretório atual: {os.getcwd()}")
+    st.write(f"Arquivos no diretório: {os.listdir(os.getcwd())}")
+
     if os.path.exists(excel_path):
-        print(f"O arquivo {excel_filename} foi encontrado.")
+        st.write(f"O arquivo {excel_filename} foi encontrado.")
     else:
-        print(f"⚠️ O arquivo {excel_filename} NÃO FOI ENCONTRADO!")
-    
+        st.write(f"⚠️ O arquivo {excel_filename} NÃO FOI ENCONTRADO!")
+
     excel_path = os.path.join(directory_path, excel_filename)
 
     # Carregar arquivos PDF
